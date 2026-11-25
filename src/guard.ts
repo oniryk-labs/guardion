@@ -33,6 +33,25 @@ export interface Guard<T> {
 }
 
 /**
+ * A guard that keeps the validated value's own type, narrowing out `null` and
+ * `undefined` instead of narrowing to a fixed type.
+ *
+ * `enforce` detects this marker to return the value's own type, e.g.
+ * `enforce(maybeUser, is.defined)` returns `User`.
+ */
+export interface TypePreservingGuard {
+  <T>(value: T): value is NonNullable<T>;
+  /**
+   * Marker used by type-level helpers to preserve the value's own type.
+   */
+  readonly preservesType: true;
+  /**
+   * Optional explainer used by `enforce` to build detailed error messages.
+   */
+  describe?: Describe;
+}
+
+/**
  * Extracts the narrowed type from a guard (or any type predicate).
  *
  * Handy when the guard is a value and you need its type: define the guard

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { GuardianError, is, enforce } from "../src/index";
 
 describe("enforce", () => {
@@ -59,6 +59,23 @@ describe("enforce", () => {
   it("prefers a custom message", () => {
     expect(() => enforce(42, is.string, "must be a string")).toThrow("must be a string");
     expect(() => enforce(42, is.string, "must be a string")).toThrow(GuardianError);
+  });
+
+  it("throws the given error instance", () => {
+    class NotFoundError extends Error {}
+
+    const error = new NotFoundError("missing resource");
+
+    expect(() => enforce(42, is.string, error)).toThrow(NotFoundError);
+    expect(() => enforce(42, is.string, error)).toThrow("missing resource");
+  });
+
+  it("keeps the value's own type with is.defined", () => {
+    const maybeUser: { name: string } | null = { name: "bruno" };
+    const user = enforce(maybeUser, is.defined);
+
+    expectTypeOf(user).toEqualTypeOf<{ name: string }>();
+    expect(user).toBe(maybeUser);
   });
 
   it("supports registered guards", () => {

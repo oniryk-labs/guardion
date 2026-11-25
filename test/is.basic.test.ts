@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { is } from "../src/index";
 
 describe("is.boolean", () => {
@@ -71,6 +71,25 @@ describe("is.defined", () => {
   it("rejects null and undefined", () => {
     expect(is.defined(null)).toBe(false);
     expect(is.defined(undefined)).toBe(false);
+  });
+
+  it("preserves the value's own type", () => {
+    const maybeName: string | null = "Bruno";
+
+    if (is.defined(maybeName)) {
+      expectTypeOf(maybeName).toEqualTypeOf<string>();
+      expect(maybeName.toUpperCase()).toBe("BRUNO");
+    }
+  });
+
+  it("describes failures", () => {
+    expect(is.defined.describe!(null, "value")).toBe(
+      "value: expected defined value, received null"
+    );
+    expect(is.defined.describe!(undefined, "value")).toBe(
+      "value: expected defined value, received undefined"
+    );
+    expect(is.defined.describe!("x", "value")).toBeNull();
   });
 });
 

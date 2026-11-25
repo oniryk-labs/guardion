@@ -1,4 +1,4 @@
-import { Guard, simple } from "../guard.js";
+import { Guard, simple, typeName, TypePreservingGuard } from "../guard.js";
 
 /**
  * Checks that a value is a boolean.
@@ -27,17 +27,30 @@ export const isUndefined: Guard<undefined> = simple(
 );
 
 /**
- * Checks that a value is not `null` or `undefined`.
+ * Checks that a value is not `null` or `undefined`, keeping the value's own
+ * type instead of narrowing to a fixed one.
  *
  * @example
  * ```ts
  * is.defined(0);     // true
  * is.defined(null);  // false
+ *
+ * const maybeName: string | null = "Bruno";
+ * if (is.defined(maybeName)) {
+ *   maybeName.toUpperCase(); // string
+ * }
  * ```
  */
-export const isDefined: Guard<NonNullable<unknown>> = simple<NonNullable<unknown>>(
-  (value) => value !== null && value !== undefined,
-  "defined value"
+export const isDefined: TypePreservingGuard = Object.assign(
+  <T>(value: T): value is NonNullable<T> =>
+    value !== null && value !== undefined,
+  {
+    preservesType: true as const,
+    describe: (value: unknown, path: string) =>
+      value === null || value === undefined
+        ? `${path}: expected defined value, received ${typeName(value)}`
+        : null,
+  }
 );
 
 /**

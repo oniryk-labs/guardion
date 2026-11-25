@@ -1,4 +1,4 @@
-import { Guard } from "./guard.js";
+import { Guard, TypePreservingGuard, typeName } from "./guard.js";
 
 /**
  * Error thrown by {@link enforce} when a value fails its guard.
@@ -16,14 +16,15 @@ export class GuardianError extends Error {
 /**
  * Validates a value against a guard and returns it with the narrowed type.
  *
- * Throws a {@link GuardianError} when the value does not satisfy the guard.
+ * When the value does not satisfy the guard, throws the given `Error` (useful
+ * for domain exceptions) or a {@link GuardianError} otherwise.
  *
  * @typeParam T - the type the guard narrows to
  * @param value - the value to validate
  * @param guard - the guard to satisfy
- * @param message - optional custom error message (takes precedence over the guard's)
+ * @param failure - optional custom error message, or the error instance to throw
  * @returns the value, narrowed to `T`
- * @throws {@link GuardianError} when the guard fails
+ * @throws the given error, or {@link GuardianError} when the guard fails
  *
  * @example
  * ```ts
@@ -31,16 +32,40 @@ export class GuardianError extends Error {
  * // user: { id: string; name: string; ... } — throws if invalid
  *
  * // error message: "value.age: expected integer, received string"
+ *
+ * const found = enforce(maybeUser, is.defined);
+ * // found: User — is.defined keeps the value's own type
+ *
+ * enforce(maybeUser, is.referable(User), new ResourceNotFoundException(User));
+ * // throws the given domain exception instead of GuardianError
  * ```
  */
-export function enforce<T>(value: unknown, guard: Guard<T>, message?: string): T {
+export function enforce<T>(
+  value: T,
+  guard: TypePreservingGuard,
+  failure?: string | Error
+): NonNullable<T>;
+export function enforce<T>(
+  value: unknown,
+  guard: Guard<T>,
+  failure?: string | Error
+): T;
+export function enforce(
+  value: unknown,
+  guard: Guard<unknown>,
+  failure?: string | Error
+): unknown {
   if (guard(value)) {
     return value;
+  }
+
+  if (failure instanceof Error) {
+    throw failure;
   }
 
   const reason = guard.describe?.(value, "value");
 
   throw new GuardianError(
-    message ?? reason ?? `Guard failed for value of type "${typeof value}"`
+    failure ?? reason ?? `Guard failed for value of type "${typeName(value)}"`
   );
 }
