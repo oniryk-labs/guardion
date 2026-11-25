@@ -1,4 +1,4 @@
-import { described, simple, typeName, Guard } from "../guard";
+import { described, simple, typeName, Guard } from "../guard.js";
 
 /**
  * Checks that a value is a `Date` instance.

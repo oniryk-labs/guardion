@@ -16,7 +16,7 @@
  * const user = enforce(data, is.shape({ name: is.string, age: is.int }));
  * ```
  */
-export * from "./enforce";
-export * from "./guard";
-export * from "./primitives";
-export * from "./registry";
+export * from "./enforce.js";
+export * from "./guard.js";
+export * from "./primitives/index.js";
+export * from "./registry.js";

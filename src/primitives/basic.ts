@@ -1,4 +1,4 @@
-import { Guard, simple } from "../guard";
+import { Guard, simple } from "../guard.js";
 
 /**
  * Checks that a value is a boolean.

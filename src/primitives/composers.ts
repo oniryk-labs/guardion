@@ -1,4 +1,4 @@
-import { described, guard, Guard, typeName } from "../guard";
+import { described, guard, Guard, typeName } from "../guard.js";
 
 /**
  * Checks that a value is one of the given literal values.

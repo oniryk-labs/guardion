@@ -1,4 +1,4 @@
-import { Guard } from "./guard";
+import { Guard } from "./guard.js";
 
 /**
  * Error thrown by {@link enforce} when a value fails its guard.

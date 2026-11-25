@@ -1,5 +1,5 @@
-import { Guard } from "./guard";
-import * as primitives from "./primitives";
+import { Guard } from "./guard.js";
+import * as primitives from "./primitives/index.js";
 
 /**
  * The `is` namespace: every built-in guard, plus {@link Is.register}.

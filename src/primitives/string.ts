@@ -1,4 +1,4 @@
-import { Guard, simple } from "../guard";
+import { Guard, simple } from "../guard.js";
 
 /**
  * A `Guard<string>` with string-specific variations.

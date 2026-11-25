@@ -1,4 +1,4 @@
-import { guard, Guard, simple, typeName } from "../guard";
+import { guard, Guard, simple, typeName } from "../guard.js";
 
 /**
  * A `Guard<unknown[]>` with array-specific variations.
