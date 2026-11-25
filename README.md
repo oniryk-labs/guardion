@@ -96,6 +96,30 @@ const isPositive = guard<number>((value) => typeof value === "number" && value >
 const price = enforce(input.price, isPositive); // throws if not a positive number
 ```
 
+### `InferGuard<T>` — getting the type back
+
+Extracts the narrowed type from a guard value, so you can define the guard once and reuse its type elsewhere.
+
+```ts
+import { is, type InferGuard } from "@oniryk/guardion";
+
+const isOrder = is.shape({
+  id: is.string.notEmpty,
+  quantity: is.int,
+  price: is.number.positive,
+});
+
+type Order = InferGuard<typeof isOrder>;
+// { id: string; quantity: number; price: number }
+```
+
+It works with any type predicate, not only guards. Non-predicate types resolve to `never`:
+
+```ts
+type Name = InferGuard<(value: unknown) => value is string>; // string
+type Nope = InferGuard<(value: unknown) => boolean>;         // never
+```
+
 ## The `is` vocabulary
 
 These are the pieces you compose to describe a value's shape. Every guard also works standalone as a type predicate.

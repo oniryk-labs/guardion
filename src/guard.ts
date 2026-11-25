@@ -33,6 +33,30 @@ export interface Guard<T> {
 }
 
 /**
+ * Extracts the narrowed type from a guard (or any type predicate).
+ *
+ * Handy when the guard is a value and you need its type: define the guard
+ * once, then recover the type with `typeof`.
+ *
+ * @typeParam T - a guard (or any type predicate)
+ *
+ * @example
+ * ```ts
+ * const isOrder = is.shape({
+ *   id: is.string.notEmpty,
+ *   quantity: is.int,
+ *   price: is.number.positive,
+ * });
+ *
+ * type Order = InferGuard<typeof isOrder>;
+ * // { id: string; quantity: number; price: number }
+ * ```
+ */
+export type InferGuard<T> = T extends (value: unknown) => value is infer U
+  ? U
+  : never;
+
+/**
  * Builds a `Guard<T>` from a boolean predicate.
  *
  * @typeParam T - the type the guard narrows to
